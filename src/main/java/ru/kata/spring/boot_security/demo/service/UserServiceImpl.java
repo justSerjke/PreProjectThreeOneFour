@@ -7,6 +7,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -25,12 +27,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     @Override
     public void saveUser(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -51,7 +54,6 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new UsernameNotFoundException("User doesn't exists");
         }
-
         return new org.springframework.security.core.userdetails
                 .User((user.getEmail()), user.getPassword(), user.getAuthorities());
     }

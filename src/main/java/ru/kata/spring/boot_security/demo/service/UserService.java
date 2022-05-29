@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
-    List<User> findAll();
+    List<User> getAllUsers();
 
     void saveUser(User user);
 

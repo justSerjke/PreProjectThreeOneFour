@@ -1,11 +1,12 @@
 let requestUrl = 'http://localhost:8080/api/admin/users'
 
-// main table
+fetchData()
+
 function fetchData() {
     fetch(requestUrl)
         .then(response => response.json())
         .then(result => fetchTable(result))
-        .then(result => console.log(result))
+        .then(log => console.log(log))
 
     function fetchTable(users) {
         let tBody = ''
@@ -20,7 +21,7 @@ function fetchData() {
             tBody += ('<td>' + object.firstName + '</td>');
             tBody += ('<td>' + object.lastName + '</td>');
             tBody += ('<td>' + object.email + '</td>');
-            tBody += ('<td>' + object.roles + '</td>');
+            tBody += ('<td>' + roles.replaceAll('ROLE_', ' ') + '</td>');
             tBody += ('<td><button type="button" onclick="editModal(' + object.id + ')" ' +
                 'class="btn btn-primary">Edit</button></td>');
             tBody += ('<td><button type="button" onclick="deleteModal(' + object.id + ')" ' +
@@ -31,90 +32,86 @@ function fetchData() {
     }
 }
 
-// New User
-
 function addNewUser() {
     fetch(requestUrl, {
+        method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        method: 'POST',
         body: JSON.stringify({
-            firstName: $('#firstname2').val(),
-            lastName: $('#lastname2').val(),
-            email: $('#email2').val(),
-            password: $('#password2').val(),
-            roles: $('#roles2').val(),
+            firstName: $('#newFirstName').val(),
+            lastName: $('#newLastName').val(),
+            email: $('#newEmail').val(),
+            password: $('#newPassword').val(),
+            roles: [
+                document.getElementById('newRoles').value
+            ]
         })
     })
-        .then((response) => {
-            if (response.ok) {
-                $('form input[type="text"], form textarea')
+        .then((responce) => {
+            if (responce.ok) {
+                $('form input[type="text"], form input[type="password"], form input[type="number"], form textarea')
                     .val('');
-                $('#adminPanel').tab('show')
-
+                $('#nav-home-tab').tab('show')
                 fetchData()
             }
         })
-
 }
 
-
-// Модальное окно Edit
 function editModal(id) {
     fetch(requestUrl + '/' + id)
         .then(response => response.json())
         .then(result => fillFields(result))
 
     function fillFields(user) {
-        $('#id3').val(user.id);
-        $('#firstName3').val(user.firstName);
-        $('#lastname3').val(user.lastName);
-        $('#email3').val(user.email);
-        $('#password3').val(user.password);
-        $('#editUser').modal()
-        $('#edit').attr('onclick','editUser(' + user.id + ')')
+        $('#edId').val(user.id);
+        $('#edFirstName').val(user.firstName);
+        $('#edLastName').val(user.lastName);
+        $('#edEmail').val(user.email);
+        $('#edPassword').val(user.password);
+        $('#editModal').modal()
+        $('#edit').attr('onclick', 'editUser(' + user.id + ')')
     }
 }
 
 function editUser(id) {
-    fetch(requestUrl + '/' + id,
-        {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: "PUT",
-            body: JSON.stringify(
-                {
-                    id: document.getElementById('id3').value,
-                    firstName: document.getElementById('firstName3').value,
-                    lastName: document.getElementById('lastname3').value,
-                    email: document.getElementById("email3").value,
-                    password: document.getElementById('password3').value,
-                    roles: document.getElementById('roles3').value
-                })
-        }).then((re) => {
-        $('#editUser').modal("hide")
+    fetch(requestUrl + '/' + id, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify(
+            {
+                id: document.getElementById('edId').value,
+                firstName: document.getElementById('edFirstName').value,
+                lastName: document.getElementById('edLastName').value,
+                email: document.getElementById("edEmail").value,
+                password: document.getElementById('edPassword').value,
+                roles: [
+                    document.getElementById('rolesEdit').value
+                ]
+            })
+    }).then((responce) => {
+        $('#editModal').modal("hide")
         fetchData()
     })
 }
 
-// Модальное окно Delete
 function deleteModal(id) {
     fetch(requestUrl + '/' + id)
         .then(response => response.json())
         .then(result => fillFields(result))
 
     function fillFields(user) {
-        $('#id1').val(user.id);
-        $('#firstname1').val(user.firstName);
-        $('#lastname1').val(user.lastName);
-        $('#email1').val(user.email);
-        $('#roles1').val(user.roleNames);
+        $('#delId').val(user.id);
+        $('#delFirstName').val(user.firstName);
+        $('#delLastName').val(user.lastName);
+        $('#delEmail').val(user.email);
         $('#delete').attr('onclick', 'deleteUser(' + user.id + ')')
-        $('#delUser').modal()
+        $('#deleteModalHtml').modal()
     }
 }
 
@@ -122,9 +119,7 @@ function deleteUser(id) {
     fetch(requestUrl + '/' + id, {
         method: 'DELETE'
     }).then(() => {
-        $('#delUser').modal('hide')
-        refreshData();
+        $('#deleteModalHtml').modal('hide')
+        fetchData();
     })
 }
-
-fetchData()

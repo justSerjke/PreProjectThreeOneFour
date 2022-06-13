@@ -41,7 +41,7 @@ public class RestAdminController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<User> getOneUser(@PathVariable("id") long id) {
         final User user = userService.findById(id);
         return user != null
@@ -49,14 +49,14 @@ public class RestAdminController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<?> updateUser(@RequestBody User user) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editUser(@RequestBody User user) {
 //        user.setRoles(roleService.getRoleSet(roleNames));
         userService.saveUser(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable long id) {
         userService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);

@@ -1,16 +1,12 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -29,36 +25,37 @@ public class AdminController {
     }
 
     @GetMapping
-    public String allUsers(@NotNull Model model) {
+    public String allUsers(Model model) {
         model.addAttribute("allRoles", roleService.getAllRoles());
         model.addAttribute("allUsers", userService.getAllUsers());
         model.addAttribute("user", userService.getUserInfo());
-        return "admin";
+        return "html/admin";
     }
 
-    @RequestMapping("/add")
-    public String addUser(@ModelAttribute @NotNull User user, @RequestParam(value = "roleNames") String[] roleNames) {
-        user.setRoles(roleService.getRoleSet(roleNames));
-        userService.saveUser(user);
-        return "redirect:/admin";
-    }
+//    @PostMapping("/add")
+//    public String addUser(@ModelAttribute User user, @RequestParam(value = "roleNames") String[] roleNames) {
+//        user.setRoles(roleService.getRoleSet(roleNames));
+//        userService.saveUser(user);
+//        return "redirect:/html/admin";
+//    }
 
     @GetMapping("/user")
     public String getUserPage(Model model) {
         model.addAttribute("user", userService.getUserInfo());
-        return "adminUser";
+        return "html/adminUser";
     }
 
-    @PostMapping(value = "/edit/{id}")
-    public String editUser(@ModelAttribute @NotNull User user, @RequestParam(value = "roleNames") String[] roleNames) {
-        user.setRoles(roleService.getRoleSet(roleNames));
-        userService.saveUser(user);
-        return "redirect:/admin";
-    }
+//    @PutMapping(value = "/edit/{id}")
+//    public String editUser(@ModelAttribute User user, @RequestParam(value = "roleNames") String[] roleNames) {
+//        user.setRoles(roleService.getRoleSet(roleNames));
+//        userService.saveUser(user);
+//        return "redirect:/html/admin";
+//    }
+//
+//    @DeleteMapping("/delete/{id}")
+//    public String deleteUser(@PathVariable("id") long id) {
+//        userService.deleteById(id);
+//        return "redirect:/html/admin";
+//    }
 
-    @RequestMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") long id) {
-        userService.deleteById(id);
-        return "redirect:/admin";
-    }
 }
